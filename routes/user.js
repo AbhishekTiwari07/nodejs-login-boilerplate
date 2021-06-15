@@ -20,7 +20,7 @@ router.post('/register', async (req,res)=>{
     }
 })
 
-router.post('/login', async (req,res)=>{
+router.post('/login', async (req,res,next)=>{
     try{
         const user = await User.findOne({
             email : req.body.email
@@ -35,10 +35,17 @@ router.post('/login', async (req,res)=>{
         
         const token = jwt.sign(user.email, process.env.TOKEN_SECRET)
 
-        res.cookie('jwt',token)
-        // res.cookie('jwt',token, { httpOnly: true })
+        res.cookie('jwt',token, {
+            expires  : new Date(Date.now() + 9999999),
+            httpOnly : false
+        })
 
-        res.status(200).json({message : "LoggedIn"})
+        res.cookie('jwt', token)
+
+        res.status(200).json({
+            message : "LoggedIn",
+            token
+    })
     }
     catch(err){
         res.status(400).json({

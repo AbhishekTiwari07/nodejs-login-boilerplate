@@ -3,11 +3,10 @@ const User = require('../models/user.js')
 require('dotenv').config()
 
 const auth = async (req,res,next) =>{
-        const token = req.cookies.jwt
+        const token = req.headers.authorization.split(" ")[1]
         const decoded = jwt.verify(token,process.env.TOKEN_SECRET)
     try{
         const user = await User.findOne({ email : decoded})
-        console.log(user)
         if(!user){
             throw new Error("error")
         }
